@@ -6,6 +6,7 @@ import ForcastDateTime from './components/ForcastDateTime'
 import WeatherIcon from './components/WeatherIcon'
 import Sunset from './assets/weather-icon/sunset.svg'
 import Sunrise from './assets/weather-icon/sunrise.svg'
+import CardSlider from './components/CardSlider'
 export default function App() : JSX.Element {
   
   const [geo , setGeo] = useState<{lat: number|null, lon: number|null}>({
@@ -16,7 +17,7 @@ export default function App() : JSX.Element {
   const [weather , setWeather] = useState<IWeather|null>(null)
   const [error , setError] = useState<string |null>(null)
   const [loading , setLoading] = useState(false)
-
+  
   // const getWeather = async (e: Event) => {
   //   e.preventDefault()
   //   const { latitude , longitude } = geo
@@ -60,9 +61,9 @@ export default function App() : JSX.Element {
   }, [geo])
   return (
     <div className="container">
-      <header className="header">
+      <header className="header mb-4">
       </header>
-      <h1>Météo sur 5 Jours</h1>
+      <h1 className='fs-3 text-center'>Prévision météo sur 5 Jours</h1>
         { weather?.list && (
           <>
             <p className='fs-5'>Ville : { weather.city.name} - <small>{weather.city.country}</small></p>
@@ -70,14 +71,14 @@ export default function App() : JSX.Element {
                 <img src={Sunset} alt="sunrise icon" width={50} />
               </p>
             <p>Lever du soleil à {new Date(weather.city.sunrise*1000).toLocaleTimeString()}  
-              <img src={Sunset} alt="sunset icon" width={50} />
+              <img src={Sunrise} alt="sunset icon" width={50} />
             </p>
-            <div className="row d-flex justify-content-between">
+            <CardSlider >
             { weather?.list.map((day, k) => (
-                <div key={k} className="card text-white bg-primary mb-3" style={{maxWidth: "20rem"}}>
+                <div key={k} className="card text-white bg-primary">
                   <WeatherIcon icon={day.weather[0]?.icon}/>
                   
-                <div className="card-body">
+                <div className="card-body ms-2 me-2">
                   <ForcastDateTime timeStamp={day?.dt} day={day.sys.pod} />
                   <div className="text-center">
                     <p className='fs-4 fw-bold'>{Math.round(day.main.temp)} °C</p></div>
@@ -86,9 +87,10 @@ export default function App() : JSX.Element {
               </div>
 
             ))}
-          </div>
+          </CardSlider>
         </>
         )}
+        
     </div>
   )
 }
