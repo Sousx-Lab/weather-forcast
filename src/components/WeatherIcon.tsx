@@ -40,6 +40,6 @@ export default function WeatherIcon({ icon }: { icon: string }): JSX.Element {
     console.log(iconMap[icon])
   }, [])
   return (
-    <img src={iconMap[icon]!} className="card-img-top" alt="..." style={{width: "200px"}}/>
+    <img src={iconMap[icon]!} className="card-img-top mx-auto" alt="Weather icon" style={{width: "200px"}}/>
   );
 }
