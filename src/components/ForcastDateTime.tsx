@@ -2,10 +2,11 @@ import React from "react";
 
 
 export default function ForcastDateTime({ timeStamp, day }: { timeStamp: number, day: string }): JSX.Element {
-  const dateOptions = {
-    year: 'numeric',
+  
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
     month: 'long',
-    day: 'numeric'
+    day: '2-digit',
   }
   return (
     <div className="text-center">
