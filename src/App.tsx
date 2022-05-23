@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import './assets/scss/App.scss'
 import { getWeatherByCity, getWeatherByGeolocation } from './services/Api'
 import {IWeather} from '../src/type/type'
@@ -7,31 +7,17 @@ import WeatherIcon from './components/WeatherIcon'
 import Sunset from './assets/weather-icon/sunset.svg'
 import Sunrise from './assets/weather-icon/sunrise.svg'
 import CardSlider from './components/CardSlider'
+import Loader from './components/Loader'
 export default function App() : JSX.Element {
   
   const [geo , setGeo] = useState<{lat: number|null, lon: number|null}>({
     lat: null,
     lon: null
   })
-  const [city , setCity] = useState<null | string>('') 
+  const [city , setCity] = useState<string>('') 
   const [weather , setWeather] = useState<IWeather|null>(null)
   const [error , setError] = useState<string |null>(null)
   const [loading , setLoading] = useState(false)
-  
-  // const getWeather = async (e: Event) => {
-  //   e.preventDefault()
-  //   const { latitude , longitude } = geo
-  //   setLoading(true)
-  //   try {
-  //     const response = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`)
-  //     const data = await response.json()
-  //     setWeather(data)
-  //     setLoading(false)
-  //   } catch (error) {
-  //     setError(error)
-  //     setLoading(false)
-  //   }
-  // }
  
   async function getGeo (): Promise<void> {
     if(navigator.geolocation){
@@ -40,12 +26,23 @@ export default function App() : JSX.Element {
         const { latitude , longitude } = position.coords
         setGeo({ lat: latitude , lon: longitude })
         setLoading(false)
-        return { latitude, longitude }
+        return
       }, () => {setError('Geolocation is not supported by this browser')})
     }
     return 
   }
-
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const response = await getWeatherByCity(city)
+      setWeather(response)
+      setLoading(false)
+    } catch (error: any) {
+      setError(error?.message)
+      setLoading(false)
+    }
+  }
   useEffect(() =>{
   (async () => {
       await getGeo()
@@ -64,14 +61,22 @@ export default function App() : JSX.Element {
       <header className="header mb-4">
       </header>
       <h1 className='fs-3 text-center'>Prévision météo sur 5 Jours</h1>
+      <form className='col-6 mx-auto mb-5' onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="city">Ville</label>
+          <input type="text" className="form-control mb-2" placeholder="Paris" value={city} onChange={e => setCity(e.target.value)}/>
+        </div>
+        <button type="submit" className="btn btn-primary">Chercher</button>
+      </form>
+      {loading && <Loader/>}
         { weather?.list && (
           <>
-            <p className='fs-5'>Ville : { weather.city.name} - <small>{weather.city.country}</small></p>
-              <p className='mb-1'>Coucher du soleil à {new Date(weather.city.sunset*1000).toLocaleTimeString()}
-                <img src={Sunset} alt="sunrise icon" width={50} />
+          <p className='fs-4 m-0'>Ville : { weather?.city.name} - <small>{weather?.city.country}</small></p>
+              <p className='m-0'>Coucher du soleil à {new Date(weather.city.sunset*1000).toLocaleTimeString()}
+                <img src={Sunset} alt="sunrise icon" width={48} />
               </p>
             <p>Lever du soleil à {new Date(weather.city.sunrise*1000).toLocaleTimeString()}  
-              <img src={Sunrise} alt="sunset icon" width={50} />
+              <img src={Sunrise} alt="sunset icon" width={48} />
             </p>
             <CardSlider >
             { weather?.list.map((day, k) => (
