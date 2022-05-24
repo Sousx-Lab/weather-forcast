@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import './assets/scss/App.scss'
 import { getWeatherByCity, getWeatherByGeolocation } from './services/Api'
-import {IWeather} from '../src/type/type'
+import type { IWeather } from './types/weather'
 import ForcastDateTime from './components/ForcastDateTime'
 import WeatherIcon from './components/WeatherIcon'
 import SunsetIcon from './assets/weather-icon/sunset.svg'
